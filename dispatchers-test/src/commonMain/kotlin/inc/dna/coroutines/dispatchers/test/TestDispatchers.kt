@@ -1,0 +1,108 @@
+package inc.dna.coroutines.dispatchers.test
+
+import inc.dna.coroutines.dispatchers.DispatcherProvider
+import inc.dna.coroutines.dispatchers.DispatchersContextElement
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+
+/**
+ * Wrapper around [kotlinx.coroutines.test.runTest] that ensures that the [DispatcherProvider] is a
+ * [TestDispatchers] instance.
+ */
+@ExperimentalCoroutinesApi
+fun runTest(
+    context: CoroutineContext = EmptyCoroutineContext,
+    block: suspend TestScope.() -> Unit,
+) = kotlinx.coroutines.test.runTest(createTestContext(context)) { block() }
+
+/**
+ * Creates a [CoroutineContext] with a [TestDispatchers] instance and the [TestCoroutineScheduler]
+ * which that [TestDispatchers] instance uses.
+ */
+@ExperimentalCoroutinesApi
+fun createTestContext(context: CoroutineContext = EmptyCoroutineContext): CoroutineContext {
+  val testDispatchers =
+      (context[DispatchersContextElement] as? TestDispatchers)
+          ?: run {
+            val scheduler =
+                context[TestCoroutineScheduler]
+                    ?: (context[CoroutineDispatcher] as? TestDispatcher)?.scheduler
+                    ?: TestCoroutineScheduler()
+            TestDispatchers(scheduler)
+          }
+  return context + testDispatchers.scheduler + testDispatchers
+}
+
+@ExperimentalCoroutinesApi
+class TestDispatchers(
+    internal val scheduler: TestCoroutineScheduler,
+) :
+    AbstractCoroutineContextElement(key = DispatchersContextElement),
+    DispatcherProvider,
+    DispatchersContextElement {
+
+  internal val dispatchersMap = mutableMapOf<DispatcherId, CoroutineDispatcher>()
+
+  override val provider: DispatcherProvider = this
+
+  override val default: CoroutineDispatcher
+    get() = get(DispatcherId.Default)
+
+  override val io: CoroutineDispatcher
+    get() = get(DispatcherId.IO)
+
+  override val main: CoroutineDispatcher
+    get() = get(DispatcherId.Main)
+
+  override val mainImmediate: CoroutineDispatcher
+    get() = get(DispatcherId.MainImmediate)
+
+  override val unconfined: CoroutineDispatcher
+    get() = get(DispatcherId.Unconfined)
+
+  fun get(id: DispatcherId): CoroutineDispatcher =
+      dispatchersMap.getOrPut(id) {
+        if (id.isUnconfinedByDefault) UnconfinedTestDispatcher(scheduler)
+        else StandardTestDispatcher(scheduler)
+      }
+}
+
+sealed class DispatcherId(open val isUnconfinedByDefault: Boolean) {
+  data object IO : DispatcherId(isUnconfinedByDefault = false)
+
+  data object Default : DispatcherId(isUnconfinedByDefault = false)
+
+  data object Main : DispatcherId(isUnconfinedByDefault = true)
+
+  data object MainImmediate : DispatcherId(isUnconfinedByDefault = true)
+
+  data object Unconfined : DispatcherId(isUnconfinedByDefault = true)
+}
+
+@ExperimentalCoroutinesApi
+fun DispatcherProvider.set(
+    id: DispatcherId,
+    dispatcher: (TestCoroutineScheduler) -> CoroutineDispatcher,
+) {
+  check(this is TestDispatchers) { "Dispatchers must be a TestDispatchers instance" }
+  dispatchersMap[id] = dispatcher(scheduler) as TestDispatcher
+}
+
+@ExperimentalCoroutinesApi
+fun DispatcherProvider.setAll(create: (TestCoroutineScheduler) -> CoroutineDispatcher) {
+  check(this is TestDispatchers) { "Dispatchers must be a TestDispatchers instance" }
+  val dispatcher = create(scheduler)
+  dispatchersMap[DispatcherId.IO] = dispatcher
+  dispatchersMap[DispatcherId.Default] = dispatcher
+  dispatchersMap[DispatcherId.Main] = dispatcher
+  dispatchersMap[DispatcherId.MainImmediate] = dispatcher
+  dispatchersMap[DispatcherId.Unconfined] = dispatcher
+}

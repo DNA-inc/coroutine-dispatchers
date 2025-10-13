@@ -1,0 +1,22 @@
+name: PR
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+
+concurrency:
+  group: ${{ github.ref_name }}
+  cancel-in-progress: ${{github.event_name == 'pull_request_target'}}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew check
