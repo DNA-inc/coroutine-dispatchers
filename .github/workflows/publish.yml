@@ -12,6 +12,7 @@ jobs:
           distribution: 'temurin' # See 'Supported distributions' for available options
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew publishAllPublicationsToGithubPackagesRepository -PGitHubPackagesUsername=${{vars.PUBLISHING_USERNAME}} -PGitHubPackagesPassword=${{secrets.PUBLISHING_PAT}}
       - uses: actions/github-script@v8
         with:
           script: |
@@ -28,4 +29,3 @@ jobs:
               type: 'commit',
             });
             await github.rest.git.createRef({owner: context.repo.owner,repo: context.repo.repo,ref: `refs/tags/${tagName}`,sha: tag.data.sha});
-      - run: ./gradlew publishAllPublicationsToGithubPackagesRepository -PGitHubPackagesUsername=${{vars.PUBLISHING_USERNAME}} -PGitHubPackagesPassword=${{secrets.PUBLISHING_PAT}}
