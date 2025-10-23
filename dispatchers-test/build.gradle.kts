@@ -1,7 +1,8 @@
 plugins { id("inc.dna.convention-library") }
 
 kotlin {
-  androidLibrary { namespace = "inc.dna.coroutines.dispatchers" }
+  androidLibrary { namespace = "inc.dna.coroutines.test" }
+  compilerOptions { optIn.add("inc.dna.coroutines.InternalDispatchersApi") }
   sourceSets {
     commonMain {
       dependencies {
@@ -11,14 +12,4 @@ kotlin {
       }
     }
   }
-}
-
-dependencies {
-  lintPublish(project(":dispatchers-lint"))
-  //  api(libs.coroutines.core)
-  testFixturesApi(libs.coroutines.core)
-  testFixturesApi(libs.coroutines.test)
-  //  testImplementation(dependencies.platform(libs.junit.bom))
-  //  testImplementation(libs.junit.jupiter)
-  //  testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

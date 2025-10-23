@@ -83,7 +83,7 @@ class CoroutinesLintDetectorTest : LintDetectorTest() {
                 """
                 package inc.dna.coroutines.test
 
-                import inc.dna.coroutines.dispatchers.test.runTest
+                import inc.dna.coroutines.test.runTest
                 import kotlinx.coroutines.EmptyCoroutineContext
 
                 class MyTest {
@@ -101,12 +101,12 @@ class CoroutinesLintDetectorTest : LintDetectorTest() {
     val coroutineStubs =
         kotlin(
             """
-                    package kotlinx.coroutines
+            package kotlinx.coroutines
             
-                    interface CoroutineContext
+            interface CoroutineContext
             
-                    object EmptyCoroutineContext : CoroutineContext
-                    """
+            object EmptyCoroutineContext : CoroutineContext
+            """
                 .trimIndent())
 
     val coroutineTestStubs =
@@ -125,7 +125,7 @@ class CoroutinesLintDetectorTest : LintDetectorTest() {
     val dnaRunTestStub =
         kotlin(
             """
-            package inc.dna.coroutines.dispatchers.test
+            package inc.dna.coroutines.test
 
             fun runTest(block: suspend () -> Unit) {
                 block()

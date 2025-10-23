@@ -1,7 +1,8 @@
 plugins { id("inc.dna.convention-library") }
 
 kotlin {
-  androidLibrary { namespace = "inc.dna.coroutines.dispatchers" }
+  androidLibrary { namespace = "inc.dna.coroutines" }
+  compilerOptions { optIn.add("inc.dna.coroutines.InternalDispatchersApi") }
   sourceSets {
     commonMain { dependencies { api(libs.coroutines.core) } }
     commonTest {

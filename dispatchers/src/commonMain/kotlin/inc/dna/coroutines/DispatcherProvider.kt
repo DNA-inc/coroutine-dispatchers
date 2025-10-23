@@ -1,4 +1,4 @@
-package inc.dna.coroutines.dispatchers
+package inc.dna.coroutines
 
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -7,6 +7,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.currentCoroutineContext
 
+/**
+ * Returns a [DispatcherProvider] instance which can be used by production code to chose which
+ * dispatcher to use
+ */
 val CoroutineScope.dispatchers: DispatcherProvider
   get() = coroutineContext.dispatchers
 
@@ -59,6 +63,7 @@ interface DispatcherProvider {
   val unconfined: CoroutineDispatcher
 }
 
+@InternalDispatchersApi
 interface DispatchersContextElement : CoroutineContext.Element {
   val provider: DispatcherProvider
 
@@ -81,3 +86,5 @@ private object DefaultDispatcherProvider : DispatcherProvider {
   override val mainImmediate: CoroutineDispatcher
     get() = Dispatchers.Main.immediate
 }
+
+@RequiresOptIn(level = RequiresOptIn.Level.ERROR) internal annotation class InternalDispatchersApi

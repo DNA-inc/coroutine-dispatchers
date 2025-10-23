@@ -1,11 +1,11 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package inc.dna.coroutines.dispatchers
+package inc.dna.coroutines
 
-import inc.dna.coroutines.dispatchers.test.DispatcherId
-import inc.dna.coroutines.dispatchers.test.createTestContext
-import inc.dna.coroutines.dispatchers.test.set
-import inc.dna.coroutines.dispatchers.test.setAll
+import inc.dna.coroutines.test.DispatcherId
+import inc.dna.coroutines.test.createTestContext
+import inc.dna.coroutines.test.set
+import inc.dna.coroutines.test.setAll
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -25,7 +25,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.withContext
 
-class RunTes4tTest {
+class RunTestTest {
 
   @Test
   fun `default runTest method`() =
@@ -36,17 +36,17 @@ class RunTes4tTest {
 
   @Test
   fun `custom runTest method`() =
-      inc.dna.coroutines.dispatchers.test.runTest { assertIs<TestDispatcher>(dispatchers.io) }
+      inc.dna.coroutines.test.runTest { assertIs<TestDispatcher>(dispatchers.io) }
 
   @Test
   fun `default runTest method with custom context`() =
-      inc.dna.coroutines.dispatchers.test.runTest(createTestContext()) {
+      inc.dna.coroutines.test.runTest(createTestContext()) {
         assertIs<TestDispatcher>(dispatchers.io)
       }
 
   @Test
   fun `default behavior for standard dispatchers`() =
-      inc.dna.coroutines.dispatchers.test.runTest {
+      inc.dna.coroutines.test.runTest {
         val jobs =
             listOf(
                 launch(dispatchers.io) {},
@@ -61,7 +61,7 @@ class RunTes4tTest {
 
   @Test
   fun `adjusted behavior for standard dispatchers`() =
-      inc.dna.coroutines.dispatchers.test.runTest {
+      inc.dna.coroutines.test.runTest {
         dispatchers.set(DispatcherId.IO, ::UnconfinedTestDispatcher)
         dispatchers.set(DispatcherId.Default, ::UnconfinedTestDispatcher)
         dispatchers.set(DispatcherId.Main, ::UnconfinedTestDispatcher)
@@ -76,7 +76,7 @@ class RunTes4tTest {
 
   @Test
   fun `default behavior for unconfined dispatchers`() =
-      inc.dna.coroutines.dispatchers.test.runTest {
+      inc.dna.coroutines.test.runTest {
         val jobs =
             listOf(
                 launch(dispatchers.main) {},
@@ -90,7 +90,7 @@ class RunTes4tTest {
 
   @Test
   fun `adjusted behavior for unconfined dispatchers`() =
-      inc.dna.coroutines.dispatchers.test.runTest {
+      inc.dna.coroutines.test.runTest {
         dispatchers.set(DispatcherId.Main, ::StandardTestDispatcher)
         dispatchers.set(DispatcherId.MainImmediate, ::StandardTestDispatcher)
         dispatchers.set(DispatcherId.Unconfined, ::StandardTestDispatcher)
@@ -107,7 +107,7 @@ class RunTes4tTest {
 
   @Test
   fun `set different io dispatcher`() =
-      inc.dna.coroutines.dispatchers.test.runTest {
+      inc.dna.coroutines.test.runTest {
         dispatchers.set(DispatcherId.IO, ::UnconfinedTestDispatcher)
         var executed = false
         launch(dispatchers.io) { executed = true }
@@ -116,7 +116,7 @@ class RunTes4tTest {
 
   @Test
   fun `setAll can make all dispatchers unconfined`() =
-      inc.dna.coroutines.dispatchers.test.runTest {
+      inc.dna.coroutines.test.runTest {
         dispatchers.setAll(::UnconfinedTestDispatcher)
         val allJobs =
             listOf(
@@ -131,7 +131,7 @@ class RunTes4tTest {
 
   @Test
   fun `setAll can make all dispatchers starndar`() =
-      inc.dna.coroutines.dispatchers.test.runTest {
+      inc.dna.coroutines.test.runTest {
         dispatchers.setAll(::StandardTestDispatcher)
         val allJobs =
             listOf(
@@ -156,7 +156,7 @@ class RunTes4tTest {
 
   @Test
   fun `delays on injected dispatcher follow the time of the TestScope`() {
-    inc.dna.coroutines.dispatchers.test.runTest {
+    inc.dna.coroutines.test.runTest {
       var didStart = false
       val job = launch {
         didStart = true
