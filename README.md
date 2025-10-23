@@ -1,13 +1,13 @@
 # Dispatchers Context Element
 
-Lightweight library to simplify replacing real `CoroutineDispatcher` instances with `TestDispatcher` by passing around a [DispatcherProvider]() instance through the `CoroutineContext`.
+Lightweight KMP library to simplify replacing real `CoroutineDispatcher` instances with `TestDispatcher` by passing around a [DispatcherProvider](dispatchers/src/commonMain/kotlin/inc/dna/coroutines/DispatcherProvider.kt) instance through the `CoroutineContext`.
 
 ## Examples
 
 <details open>
     <summary><b>Classes without scope reference</b></summary>
 
-Suspending methods can access the dispatchers that you are used to using the top-level suspending `currentDispatchers()` method that the library provides. In test codes you just have to replace the `kotlinx.coroutines.test.runTest` import with `inc.dna.coroutines.test.runTest`.
+Suspending methods can select the dispatcher to use with the top-level `currentDispatchers()` method that the library provides. In test code you just have to replace the `kotlinx.coroutines.test.runTest` import with `inc.dna.coroutines.test.runTest`.
 
 ```kotlin
 class MyUseCase {
@@ -39,11 +39,14 @@ class MyUseCaseTest {
 
 For classes that have a constructor injected scope, like ViewModels you have to make sure that you pass in a scope which is either the `TestScope`, `backgroundScope` or a custom scope that [inherits the `DispatchersContextElement`](#coroutinecontext-inheritance) from the `TestScope.coroutineContext`.
 
+Then you can use the extension property on `val CoroutineScope.dispatchers` to select the dispatcher that you need.
+
 ```kotlin
 class MyViewModel(
     val scope: CoroutineScope,
 ) : ViewModel(scope) {
-    ...
+
+    private val defaultDispatcher = scope.dispatchers.default
 }
 ```
 
@@ -102,7 +105,7 @@ class MyViewModelTest {
 
 Besides the top-level runTest, the `coroutines-test` artifact also allows early creation of the `TestScope` so that you can use it to instantiate dependencies when the test framework creates your test instance.
 
-For this the library provides the [`inc.dna.coroutines.test.TestScope`](dispatchers-test/src/commonMain/kotlin/inc/dna/coroutines/test/TestScope.kt) top-level factory method which ensures that the `TestScope` is 
+For this the library provides the [`inc.dna.coroutines.test.TestScope`](dispatchers-test/src/commonMain/kotlin/inc/dna/coroutines/test/TestScope.kt) top-level factory method which ensures that the `TestScope` is instantiated with the right `CoroutineContext` elements.
 
 ```kotlin
 import inc.dna.coroutines.test.TestScope
@@ -127,11 +130,48 @@ The library works by making the `CoroutineContext` of the `runTest` method conta
 
 This means that it is important to structure your code in such a way that all scopes that are used or created during test execution inherit their `CoroutineContext` from the test, which should in any case be done because of structure concurrency rules.
 
+## Dispatcher Mapping
+
+The library has uses a default mapping for mapping real dispatchers to either `StandardTestDispatcher` or `UnconfinedTestDispatcher` according to the following mapping table
+
+|                            | Prod                         | Test                       |
+|----------------------------|------------------------------|----------------------------|
+| `dispatches.default`       | `Dispatchers.Default`        | `StandardTestDispatcher`   |
+| `dispatches.io`            | `Dispatchers.IO`             | `StandardTestDispatcher`   |
+| `dispatches.main`          | `Dispatchers.Main`           | `UnconfinedTestDispatcher` |
+| `dispatches.mainImmediate` | `Dispatchers.Main.immediate` | `UnconfinedTestDispatcher` |
+| `dispatches.unconfined`    | `Dispatchers.Unconfined`     | `UnconfinedTestDispatcher` |
+
+This behavior can be overridden using an extension method on the `DispatcherProvider` interface that is part of the `dispatchers-test` artifact.
+
+```kotlin
+fun `my test`() = runTest {
+    dispatchers.setAll(::UnconfinedTestDispatcher)
+    dispatchers.set(DispatcherId.IO, ::UnconfinedTestDispatcher)
+    ..
+}
+```
+
 ## Dependencies
 
 ```kotlin
 dependencies {
     implementation("inc.dna.coroutines:dispatchers:<latest-version>")
     testImplementation("inc.dna.coroutines:dispatchers-test:<latest-version>")
+}
+```
+
+For KMP projects
+
+```kotlin
+kotlin {
+    sourceSets {
+        commonMain {
+            implementation("inc.dna.coroutines:dispatchers:<latest-version>")
+        }
+        commonTest {
+            implementation("inc.dna.coroutines:dispatchers-test:<latest-version>")
+        }
+    }
 }
 ```

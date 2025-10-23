@@ -1,6 +1,7 @@
 root = true
 
 [*]
+insert_final_newline = true
 
 [*.kt]
 indent_size = 2
