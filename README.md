@@ -1,4 +1,4 @@
-# Dispatchers Context Element
+# Dispatchers Context
 
 Lightweight KMP library to simplify replacing real `CoroutineDispatcher` instances with `TestDispatcher` by passing around a [DispatcherProvider](dispatchers/src/commonMain/kotlin/inc/dna/coroutines/DispatcherProvider.kt) instance through the `CoroutineContext`.
 
