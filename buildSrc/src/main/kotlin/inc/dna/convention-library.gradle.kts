@@ -45,15 +45,3 @@ mavenPublishing {
     scm { url = "https://github.com/DNA-inc/coroutine-dispatchers" }
   }
 }
-
-publishing {
-  repositories {
-    maven {
-      name = "GitHubPackages"
-      url = uri("https://maven.pkg.github.com/DNA-inc/coroutine-dispatchers")
-      credentials(PasswordCredentials::class)
-    }
-  }
-}
-
-// tasks.test { useJUnitPlatform() }

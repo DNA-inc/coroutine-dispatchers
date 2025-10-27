@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v5
         with:
-          distribution: 'temurin' # See 'Supported distributions' for available options
+          distribution: 'temurin'
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v3
       - run: ./gradlew check
@@ -29,10 +29,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v5
         with:
-          distribution: 'temurin' # See 'Supported distributions' for available options
+          distribution: 'temurin'
           java-version: '21'
       - uses: gradle/actions/setup-gradle@v3
-      - run: ./gradlew publishToMavenCentral
+      - run: ./gradlew publish
         env:
           ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
           ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
