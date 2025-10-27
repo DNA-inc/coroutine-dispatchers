@@ -1,0 +1,41 @@
+name: PR
+on:
+  push:
+    branches:
+      - main
+      - publishing-test
+  pull_request_target:
+
+concurrency:
+  group: ${{ github.ref_name }}
+  cancel-in-progress: ${{github.event_name == 'pull_request_target'}}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew check
+  publish:
+    if: github.ref == 'refs/heads/publishing-test' && github.repository == 'DNA-inc/coroutine-dispatchers'
+    needs: check
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin' # See 'Supported distributions' for available options
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v3
+      - run: ./gradlew publishToMavenCentral
+        env:
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.SONATYPE_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.SONATYPE_PASSWORD }}
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyId: E3B038D8
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{secrets.GPG_PASSKEY}}
