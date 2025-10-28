@@ -1,5 +1,7 @@
 # DispatchersNA
 
+![Maven Central Version](https://img.shields.io/maven-central/v/inc.dna.coroutines/dispatchers)
+
 Lightweight KMP library to simplify replacing real `CoroutineDispatcher` instances with `TestDispatcher` by passing around a [DispatcherProvider](dispatchers/src/commonMain/kotlin/inc/dna/coroutines/DispatcherProvider.kt) instance through the `CoroutineContext`.
 
 ## Examples
