@@ -21,7 +21,7 @@ class MyUseCase {
 import inc.dna.coroutines.test.runTest
 
 class MyUseCaseTest {
-    fun `my test`() = runText {
+    fun `my test`() = runTest {
         // Arrange
         val subject = MyUseCase()
 
