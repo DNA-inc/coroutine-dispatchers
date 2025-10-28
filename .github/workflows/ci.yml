@@ -6,8 +6,8 @@ on:
   pull_request_target:
 
 concurrency:
-  group: `${{ github.event_name }}-${{github.event_name == 'push' && github.ref_name || github.event.pull_request.number }}`
-  cancel-in-progress: ${{github.event_name == 'pull_request_target'}}
+  group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   check:
