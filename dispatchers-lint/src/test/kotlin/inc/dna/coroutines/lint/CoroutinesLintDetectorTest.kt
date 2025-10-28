@@ -102,9 +102,9 @@ class CoroutinesLintDetectorTest : LintDetectorTest() {
         kotlin(
             """
             package kotlinx.coroutines
-            
+
             interface CoroutineContext
-            
+
             object EmptyCoroutineContext : CoroutineContext
             """
                 .trimIndent())
