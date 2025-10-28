@@ -1,8 +1,11 @@
-plugins { `kotlin-dsl` }
+plugins {
+  `kotlin-dsl`
+  id("com.ncorti.ktfmt.gradle") version "0.25.0"
+}
 
 dependencies {
-  implementation("com.android.tools.build:gradle:8.13.0")
+  implementation(libs.android.gradlePlugin)
   implementation(libs.kotlin.gradlePlugin)
   implementation(libs.ktfmt.gradlePlugin)
-  implementation("com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin:0.34.0")
+  implementation(libs.mavenPublish.gradlePlugin)
 }

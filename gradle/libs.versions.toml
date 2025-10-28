@@ -1,14 +1,17 @@
 [versions]
 junitBom = "6.0.0"
 kotlin = "2.2.0"
-lint = "31.12.0"
-ktfmt = "0.24.0"
+agp = "8.13.0"
+lint = "31.13.0"
+ktfmt = "0.25.0"
+mavenPublish = "0.34.0"
 coroutines = { prefer = "1.10.2", require = "1.7.0" }
 
 [libraries]
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
 
+android-gradlePlugin = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 kotlin-gradlePlugin = { module = "org.jetbrains.kotlin.android:org.jetbrains.kotlin.android.gradle.plugin", version.ref = "kotlin" }
 ktfmt-gradlePlugin = { module = "com.ncorti.ktfmt.gradle:com.ncorti.ktfmt.gradle.gradle.plugin", version.ref = "ktfmt" }
 junit = { module = "junit:junit", version = "4.13.1" }
@@ -19,6 +22,8 @@ junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
 
 lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lint" }
 lint-test = { module = "com.android.tools.lint:lint-tests", version.ref = "lint" }
+
+mavenPublish-gradlePlugin = { module = "com.vanniktech.maven.publish:com.vanniktech.maven.publish.gradle.plugin", version.ref = "mavenPublish" }
 
 [plugins]
 ktfmt = { id = "com.ncorti.ktfmt.gradle", version.ref = "ktfmt" }

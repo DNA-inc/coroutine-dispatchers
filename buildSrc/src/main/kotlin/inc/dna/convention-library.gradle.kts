@@ -14,13 +14,10 @@ java {
 }
 
 kotlin {
-    androidLibrary {
-        compileSdk = 36
-    }
-    jvm()
-    listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+  androidLibrary { compileSdk = 36 }
+  jvm()
+  listOf(iosX64(), iosArm64(), iosSimulatorArm64())
 }
-
 
 mavenPublishing {
   coordinates(
@@ -29,10 +26,11 @@ mavenPublishing {
   )
   pom {
     licenses {
-      name = "MIT"
-      url = "https://opensource.org/licenses/MIT"
+      license {
+        name = "MIT"
+        url = "https://opensource.org/licenses/MIT"
+      }
     }
-    name = "Coroutine Dispatchers Lint Rules"
     url = "https://github.com/DNA-inc/coroutine-dispatchers"
     inceptionYear = "2025"
     developers {
