@@ -10,11 +10,12 @@ import com.android.tools.lint.detector.api.Severity
 import com.android.tools.lint.detector.api.SourceCodeScanner
 import com.android.tools.lint.detector.api.TextFormat
 import com.intellij.psi.PsiMethod
+import java.util.EnumSet
 import org.jetbrains.uast.UCallExpression
 
-class CoroutinesLintDetector : Detector(), SourceCodeScanner {
+class TestContextLintDetector : Detector(), SourceCodeScanner {
 
-  override fun getApplicableMethodNames(): List<String> = listOf("runTest")
+  override fun getApplicableMethodNames(): List<String> = listOf("runTest", "TestScope")
 
   override fun visitMethodCall(context: JavaContext, node: UCallExpression, method: PsiMethod) {
     if (method.qualifiedMethodName.orEmpty().startsWith("kotlinx.coroutines.test.runTest")) {
@@ -28,12 +29,23 @@ class CoroutinesLintDetector : Detector(), SourceCodeScanner {
             UseTestContextIssue.getExplanation(TextFormat.TEXT),
             fix()
                 .replace()
-                .imports("org.jetbrains.kotlinx.coroutines.test.runTest")
-                .all()
+                .text(node.methodIdentifier?.name.orEmpty())
                 .with("inc.dna.coroutines.test.runTest")
                 .build(),
         )
       }
+    } else if (method.qualifiedMethodName
+        .orEmpty()
+        .startsWith("kotlinx.coroutines.test.TestScope")) {
+      context.report(
+          issue = UseTestContextIssue,
+          scope = node,
+          location = context.getNameLocation(node),
+          message =
+              "Use inc.dna.coroutines.test.TestScope() to ensure test dispatcher replacement.",
+          quickfixData =
+              fix().replace().text("TestScope").with("inc.dna.coroutines.test.TestScope").build(),
+      )
     }
   }
 
@@ -49,7 +61,10 @@ class CoroutinesLintDetector : Detector(), SourceCodeScanner {
             priority = 5,
             severity = Severity.ERROR,
             implementation =
-                Implementation(CoroutinesLintDetector::class.java, Scope.JAVA_FILE_SCOPE),
+                Implementation(
+                    TestContextLintDetector::class.java,
+                    EnumSet.of(Scope.JAVA_FILE, Scope.TEST_SOURCES),
+                ),
         )
   }
 }

@@ -13,5 +13,3 @@ java {
 }
 
 kotlin { compilerOptions { jvmTarget = JvmTarget.JVM_17 } }
-
-tasks.test { useJUnitPlatform() }

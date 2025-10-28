@@ -6,5 +6,9 @@ import com.android.tools.lint.detector.api.Issue
 
 class CoroutinesIssueRegistry : IssueRegistry() {
   override val vendor = Vendor(vendorName = "DNA Inc.")
-  override val issues: List<Issue> = listOf(CoroutinesLintDetector.UseTestContextIssue)
+  override val issues: List<Issue> =
+      listOf(
+          TestContextLintDetector.UseTestContextIssue,
+          DispatcherProviderUsageDetector.UseDispatcherProviderIssue,
+      )
 }
