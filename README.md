@@ -177,3 +177,17 @@ kotlin {
     }
 }
 ```
+
+## Lint Rules
+
+The library ships lint rules which will flag the usages of the following types in favor of the equivalents from this library.
+
+- `kotlinx.coroutines.Dispatchers`
+- `kotlinx.coroutines.test.runTest`
+- `kotlinx.coroutines.test.TestScope`
+
+## Detekt Rules
+
+__To come__
+
+Detekt might be preferred over lint because it tends to run quicker so there will be detekt rules coming as well
