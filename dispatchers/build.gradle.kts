@@ -15,4 +15,9 @@ kotlin {
   }
 }
 
+mavenPublishing.pom {
+  name = "DispatchersNA API"
+  description = "API for selecting CoroutineDispatcher from a Context Element"
+}
+
 dependencies { lintPublish(project(":dispatchers-lint")) }

@@ -13,3 +13,8 @@ kotlin {
     }
   }
 }
+
+mavenPublishing.pom {
+  name = "DispatchersNA Testing API"
+  description = "APIs for replacing real dispatchers with test instances."
+}
