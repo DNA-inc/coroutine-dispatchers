@@ -34,9 +34,10 @@ class DispatcherProviderUsageDetector : Detector(), SourceCodeScanner {
       val receiver = node.receiver.tryResolve() as? PsiClass
       if (receiver?.qualifiedName == Dispatchers::class.java.canonicalName) {
         val method = node.selector.tryResolve() as? PsiMethod
-        val returnType = (method?.returnType as? PsiClassType)?.resolve()!!
-        if (context.evaluator.implementsInterface(
-            returnType, "kotlinx.coroutines.CoroutineDispatcher")) {
+        val returnType = (method?.returnType as? PsiClassType)?.resolve()
+        if (returnType != null &&
+            context.evaluator.implementsInterface(
+                returnType, "kotlinx.coroutines.CoroutineDispatcher")) {
           var issueNode = node
           val parentExpression = node.uastParent as? UQualifiedReferenceExpression
           val isMainImmediate =
