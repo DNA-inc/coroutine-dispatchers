@@ -5,6 +5,8 @@ import inc.dna.coroutines.DispatchersContextElement
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -18,8 +20,9 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
  */
 fun runTest(
     context: CoroutineContext = EmptyCoroutineContext,
-    block: suspend TestScope.() -> Unit,
-) = kotlinx.coroutines.test.runTest(createTestContext(context)) { block() }
+    timeout: Duration = 10.seconds,
+    testBody: suspend TestScope.() -> Unit,
+) = kotlinx.coroutines.test.runTest(createTestContext(context), timeout) { testBody() }
 
 /**
  * Creates a [CoroutineContext] with a [TestDispatchers] instance and the [TestCoroutineScheduler]
