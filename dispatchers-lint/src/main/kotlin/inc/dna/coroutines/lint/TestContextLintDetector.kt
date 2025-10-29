@@ -12,6 +12,7 @@ import com.android.tools.lint.detector.api.TextFormat
 import com.intellij.psi.PsiMethod
 import java.util.EnumSet
 import org.jetbrains.uast.UCallExpression
+import org.jetbrains.uast.getContainingUFile
 
 class TestContextLintDetector : Detector(), SourceCodeScanner {
 
@@ -29,8 +30,10 @@ class TestContextLintDetector : Detector(), SourceCodeScanner {
             UseTestContextIssue.getExplanation(TextFormat.TEXT),
             fix()
                 .replace()
-                .text(node.methodIdentifier?.name.orEmpty())
+                .range(context.getLocation(node.getContainingUFile()))
+                .pattern("kotlinx.coroutines.test.runTest".replace(".", "[\\s]*\\.[\\s]*"))
                 .with("inc.dna.coroutines.test.runTest")
+                .autoFix()
                 .build(),
         )
       }
@@ -44,7 +47,13 @@ class TestContextLintDetector : Detector(), SourceCodeScanner {
           message =
               "Use inc.dna.coroutines.test.TestScope() to ensure test dispatcher replacement.",
           quickfixData =
-              fix().replace().text("TestScope").with("inc.dna.coroutines.test.TestScope").build(),
+              fix()
+                  .replace()
+                  .range(context.getLocation(node.getContainingUFile()))
+                  .pattern("kotlinx.coroutines.test.TestScope".replace(".", "[\\s]*\\.[\\s]*"))
+                  .with("inc.dna.coroutines.test.TestScope")
+                  .autoFix()
+                  .build(),
       )
     }
   }
